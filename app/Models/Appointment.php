@@ -9,16 +9,16 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','doctor_id','date','time','status'];
+    public $timestamps = false; // ✅ Disable automatic timestamps
 
-    public function patient()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
-
-public function doctor()
-{
-    return $this->belongsTo(User::class, 'doctor_id');
-}
-
+    protected $fillable = [
+        'user_id',
+        'patient',
+        'doctor',
+        'date',
+        'time',
+        'status',
+        'type',
+        'notes',
+    ];
 }
