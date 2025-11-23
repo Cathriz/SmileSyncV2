@@ -19,7 +19,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         } 
         .navbar-brand { font-weight: 700; }
-        .user-avatar { border: 2px solid white; }
+        .user-avatar { border: 2px solid white; width: 40px; height: 40px; object-fit: cover; } /* Added size for clarity */
 
         /* --- Sidebar --- */
         .sidebar { 
@@ -66,10 +66,33 @@
 <nav class="navbar navbar-expand-lg px-4 sticky-top">
     <a class="navbar-brand fw-bold text-white"><i class="bi bi-person-fill-gear me-2"></i> SmileSync Dashboard</a>
 
-    <div class="ms-auto d-flex align-items-center">
-        <span class="text-white fw-semibold me-3 d-none d-md-inline">Welcome, {{ Auth::user()->name }}</span>
-        <img src="https://i.pravatar.cc/40?img=6" class="rounded-circle user-avatar">
+    {{-- START: UPDATED Dropdown Menu for User and Logout --}}
+    <div class="ms-auto">
+        <div class="dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{-- Name visible on desktop --}}
+                <span class="text-white fw-semibold me-2 d-none d-md-inline">Welcome, {{ Auth::user()->name }}</span>
+                {{-- Avatar --}}
+                <img src="https://i.pravatar.cc/40?img=6" class="rounded-circle user-avatar">
+            </a>
+            
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
+                <li class="dropdown-header">Logged in as:</li>
+                <li class="dropdown-header fw-bold text-primary">{{ Auth::user()->name }}</li>
+                <li><hr class="dropdown-divider"></li>
+                
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="dropdown-item" type="submit">
+                            <i class="bi bi-box-arrow-right me-2 text-danger"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
+    {{-- END: UPDATED Dropdown Menu --}}
 </nav>
 
 <div class="container-fluid p-0">
@@ -83,7 +106,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('appointments.index') }}"><i class="bi bi-calendar-check me-2"></i>Appointments</a></li>
                 <li class="nav-item"><a class="nav-link" href="/records"><i class="bi bi-people me-2"></i>Records</a></li>
                 <li class="nav-item"><a class="nav-link" href="reports"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                <li class="nav-item mb-2"><a class="nav-link" href="{{ route('notifications.index') }}"><i class="bi bi-bell me-2"></i> Notifications</a></li>
             </ul>
         </div>
 
@@ -167,9 +190,7 @@
                         <tbody>
                             @forelse ($appointments as $appt)
                                 <tr>
-                                    {{-- ✅ FIX: Using the 'patient' column directly from the appointments table --}}
                                     <td><i class="bi bi-person-circle me-1 text-muted"></i> {{ $appt->patient ?? '-' }}</td>
-                                    {{-- ✅ FIX: Using the 'doctor' column directly from the appointments table --}}
                                     <td>Dr. {{ $appt->doctor ?? '-' }}</td>
                                     <td>{{ $appt->date }}</td>
                                     <td>{{ $appt->time }}</td>

@@ -90,7 +90,7 @@
                 <li class="nav-item"><a class="nav-link" href="/records"><i class="bi bi-people me-2"></i>Records</a></li>
                 {{-- FIX: Using route('reports.index') for the main report link --}}
                 <li class="nav-item"><a class="nav-link active" href="{{ route('reports.index') }}"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                <li class="nav-item mb-2"><a class="nav-link" href="{{ route('notifications.index') }}"><i class="bi bi-bell me-2"></i> Notifications</a></li>
             </ul>
             <hr class="my-4 mx-3">
 
@@ -106,11 +106,7 @@
                         <i class="bi bi-heart-pulse me-2"></i> Doctor Overview
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ $reportType === 'financial' ? 'active' : '' }}" href="{{ route('reports.index', ['report' => 'financial']) }}">
-                        <i class="bi bi-currency-dollar me-2"></i> Financial (Mock)
-                    </a>
-                </li>
+                
             </ul>
         </div>
         

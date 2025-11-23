@@ -4,27 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // Required for Auth::user()
+// 🎯 ADD THESE IMPORTS:
+use App\Notifications\DoctorAdded;
+use App\Notifications\DoctorDeleted; 
 
 class DoctorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    // app/Http/Controllers/DoctorController.php
-
-public function index()
-{
-    // Fetch all doctors to display in the table
-    $doctors = Doctor::orderBy('name')->get();
-    
-    // Pass the doctors list to the view, now pointing to doctor.blade.php
-    return view('doctor', compact('doctors')); 
-}
+    public function index()
+    {
+        // Fetch all doctors to display in the table
+        $doctors = Doctor::orderBy('name')->get();
+        
+        // Pass the doctors list to the view, now pointing to doctor.blade.php
+        return view('doctor', compact('doctors')); 
+    }
 
     /**
      * Show the form for creating a new resource.
-     * Note: Since we are using a single page, this method is often skipped. 
-     * The form will be included in the index view.
      */
     public function create()
     {
@@ -45,7 +45,12 @@ public function index()
         ]);
 
         // 2. Create the Doctor record
-        Doctor::create($request->all());
+        $doctor = Doctor::create($request->all());
+
+        // 🎯 DISPATCH NOTIFICATION: Doctor Added
+        $userName = Auth::user()->name ?? 'A user';
+        Auth::user()->notify(new DoctorAdded($doctor, $userName));
+        // ----------------------------------------
 
         // 3. Redirect back to the index view with a success message
         return redirect()->route('doctors.index')->with('success', 'Doctor added successfully!');
@@ -56,9 +61,19 @@ public function index()
      */
     public function destroy(Doctor $doctor)
     {
+        // Save the doctor's name before deletion, as the object is lost afterward
+        $doctorName = $doctor->name; 
+        
+        // 1. Delete the Doctor record
         $doctor->delete();
 
-        // Redirect back with a success message
+        // 🎯 DISPATCH NOTIFICATION: Doctor Deleted
+        $userName = Auth::user()->name ?? 'A user';
+        // Pass the doctor's name to the notification class
+        Auth::user()->notify(new DoctorDeleted($doctorName, $userName)); 
+        // ------------------------------------------
+
+        // 2. Redirect back with a success message
         return redirect()->route('doctors.index')->with('success', 'Doctor deleted successfully!');
     }
 
