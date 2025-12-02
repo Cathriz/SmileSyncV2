@@ -7,37 +7,33 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* --- GENERAL & BASE STYLES --- */
         body { 
             background: #f0f2f5; 
-            font-family: 'Poppins', sans-serif; /* Added font-family for consistency */
+            font-family: 'Poppins', sans-serif;
         }
         
-        /* --- NAVBAR STYLES (FROM DASHBOARD CODE) --- */
         .navbar { 
-            background: #004c9e; /* Dark Blue from Dashboard */
+            background: #004c9e;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         } 
         .navbar-brand { font-weight: 700; }
         .user-avatar { border: 2px solid white; width: 40px; height: 40px; object-fit: cover; } 
 
-        /* --- SIDEBAR STYLES --- */
         .sidebar {
             background: white;
-            /* Adjusted height to account for the sticky navbar (Approx 60px) */
             min-height: calc(100vh - 60px); 
-            border-right: 1px solid #e0e4eb; /* Added border for look */
-            padding: 20px 0; /* Adjusted padding to match dashboard sidebar */
+            border-right: 1px solid #e0e4eb;
+            padding: 20px 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.02);
             position: sticky;
-            top: 60px; /* Offset by the navbar height */
+            top: 60px;
         }
         .sidebar h5 { color: #004c9e; padding: 0 20px; }
         .sidebar .nav-item { padding: 0 10px; }
         .sidebar .nav-link { 
             color: #333; 
-            padding: 12px 15px; /* Updated padding to match dashboard sidebar */
-            border-radius: 8px; /* Updated border-radius to match dashboard sidebar */
+            padding: 12px 15px;
+            border-radius: 8px;
             margin-bottom: 5px; 
             display: flex; 
             align-items: center; 
@@ -48,14 +44,13 @@
         .sidebar .nav-link:hover { 
             background-color: #0069d9; 
             color: #fff !important; 
-            font-weight: 600; /* Updated font-weight to match dashboard sidebar */
+            font-weight: 600;
         }
         
-        /* New Styles for Profile Card - Keeping existing */
         .profile-card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(10, 7, 7, 0.08);
             margin-bottom: 20px;
         }
         .profile-header {
@@ -86,7 +81,6 @@
 <nav class="navbar navbar-expand-lg px-4 sticky-top">
     <a class="navbar-brand fw-bold text-white" href="/dashboard"><i class="bi bi-person-fill-gear me-2"></i> SmileSync Dashboard</a>
 
-    {{-- UPDATED Dropdown Menu for User and Logout (Directly copied from dashboard code) --}}
     <div class="ms-auto">
         <div class="dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -111,6 +105,7 @@
         </div>
     </div>
 </nav>
+
 <div class="container-fluid p-0">
     <div class="row g-0">
 
@@ -122,7 +117,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('doctors.index') }}"><i class="bi bi-person-badge me-2"></i>Manage Doctors</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('appointments.index') }}"><i class="bi bi-calendar-check me-2"></i>Appointments</a></li>
                 <li class="nav-item"><a class="nav-link active" href="{{ route('records.index') }}"><i class="bi bi-people me-2"></i>Records</a></li>
-                <li class="nav-item"><a class="nav-link" href="reports"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('reports.index') }}"><i class="bi bi-bar-chart-line me-2"></i>Reports</a></li>
                 <li class="nav-item mb-2"><a class="nav-link" href="{{ route('notifications.index') }}"><i class="bi bi-bell me-2"></i> Notifications</a></li>
             </ul>
         </div>
@@ -147,7 +142,7 @@
 
             <div class="row">
                 
-                {{-- PATIENT DETAILS COLUMN (4 Columns) --}}
+                {{-- PATIENT DETAILS --}}
                 <div class="col-lg-4">
                     <div class="profile-card shadow-lg">
                         <div class="profile-header">
@@ -161,7 +156,6 @@
                                 <i class="bi bi-info-circle me-1"></i> Demographic Information
                             </h6>
                             
-                            {{-- Display Profile Data --}}
                             <p class="mb-2"><span class="fw-semibold">Phone:</span> {{ $profile->phone ?? 'N/A' }}</p>
                             <p class="mb-2"><span class="fw-semibold">Address:</span> {{ $profile->address ?? 'N/A' }}</p>
                             <p class="mb-2"><span class="fw-semibold">Records Count:</span> {{ $records->count() }}</p>
@@ -172,7 +166,7 @@
                             </h6>
                             
                             @if($profile && $profile->permanent_document)
-                                <a href="{{ asset('storage/uploads/'.$profile->permanent_document) }}" target="_blank" class="btn btn-sm btn-outline-success w-100">
+                                <a href="{{ asset('storage/'.$profile->permanent_document) }}" target="_blank" class="btn btn-sm btn-outline-success w-100">
                                     <i class="bi bi-file-earmark-check"></i> View Permanent Document
                                 </a>
                             @else
@@ -186,7 +180,7 @@
                     </div>
                 </div>
 
-                {{-- RECORD HISTORY COLUMN (8 Columns) --}}
+                {{-- RECORD HISTORY --}}
                 <div class="col-lg-8">
                     <div class="card p-4 shadow-lg h-100">
                         <h4 class="fw-bold text-danger border-bottom pb-2 mb-4">
@@ -213,11 +207,10 @@
                                 </p>
 
                                 @if($record->document)
-                                    <a href="{{ asset('storage/uploads/'.$record->document) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                    <a href="{{ asset('storage/'.$record->document) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="bi bi-file-earmark-arrow-down"></i> View Attached Document
                                     </a>
                                 @endif
-                                
                             </div>
                         @empty
                             <div class="alert alert-warning">
@@ -232,14 +225,12 @@
     </div>
 </div>
 
-{{-- 2. MODALS (Kept original modals for functionality) --}}
-
+{{-- EDIT PATIENT PROFILE MODAL --}}
 <div class="modal fade" id="editProfileModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="POST" action="{{ route('patients.update_profile') }}" enctype="multipart/form-data" class="modal-content">
             @csrf
             
-            {{-- HIDDEN FIELD: PASS THE CURRENT PATIENT NAME --}}
             <input type="hidden" name="patient_name" value="{{ $patient_name }}">
             
             <div class="modal-header bg-primary text-white">
@@ -250,8 +241,7 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Phone</label>
-                    <input type="text" name="phone" class="form-control" placeholder="(555) 123-4567" 
-                            value="{{ $profile->phone ?? '' }}">
+                    <input type="text" name="phone" class="form-control" placeholder="(555) 123-4567" value="{{ $profile->phone ?? '' }}">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Address</label>
@@ -273,68 +263,6 @@
         </form>
     </div>
 </div>
-
-{{-- EDIT RECORD MODALS (Need to include full form logic if you want to edit here) --}}
-@foreach($records as $r)
-    <div class="modal fade" id="editRecordModal{{ $r->id }}" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            {{-- NOTE: You must place the full update form content here, similar to the one in your records.blade.php --}}
-            <form method="POST" action="{{ route('records.update') }}" enctype="multipart/form-data" class="modal-content">
-                @csrf
-                @method('PUT')
-
-                <input type="hidden" name="id" value="{{ $r->id }}">
-                <input type="hidden" name="existing_document" value="{{ $r->document }}">
-
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">Edit Record #{{ $r->id }}</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="fw-semibold">Patient Name</label>
-                            <input type="text" name="patient_name" class="form-control" value="{{ $r->patient }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold">Doctor Name</label>
-                            <input type="text" name="doctor_name" class="form-control" value="{{ $r->doctor }}" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="fw-semibold">Type</label>
-                            <input type="text" name="type" class="form-control" value="{{ $r->type }}" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="fw-semibold">Date</label>
-                            <input type="date" name="date" class="form-control" value="{{ $r->date }}" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="fw-semibold">Time</label>
-                            <input type="time" name="time" class="form-control" value="{{ \Carbon\Carbon::parse($r->time)->format('H:i') }}" required>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="fw-semibold">Notes</label>
-                            <textarea name="notes" class="form-control">{{ $r->notes }}</textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="fw-semibold">Upload Document (Replaces current)</label>
-                            <input type="file" name="document" class="form-control">
-                            @if($r->document)
-                                <small class="text-muted">Current file: {{ $r->document }}</small>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-info text-white" type="submit">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-@endforeach
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

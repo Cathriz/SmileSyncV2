@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class PatientController extends Controller
 {
     /**
-     * Handle the update or creation of patient profile details (Phone, Address, Documents).
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Handle the update or creation of patient profile details.
      */
     public function updateProfile(Request $request)
     {
@@ -26,54 +23,53 @@ class PatientController extends Controller
         ]);
 
         $patientName = $request->input('patient_name');
+        $userId = Auth::id();
 
         // 2. Check for existing profile
         $existingProfile = DB::table('patients')
-            ->where('user_id', Auth::id())
+            ->where('user_id', $userId)
             ->where('patient_name', $patientName)
             ->first();
 
-        $fileName = $existingProfile->permanent_document ?? null;
+        // 3. Handle Document Upload
+        $filePath = $existingProfile->permanent_document ?? null;
 
-        // 3. Handle Document Upload/Update
         if ($request->hasFile('permanent_document')) {
-            // Delete old file if it exists
-            if ($fileName && Storage::disk('public')->exists("uploads/$fileName")) {
-                Storage::disk('public')->delete("uploads/$fileName");
+            // Delete old file if exists
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
             }
-            
-            // Upload new file
+
+            // Save new file
             $file = $request->file('permanent_document');
             $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = 'uploads/' . $fileName;
             $file->storeAs('uploads', $fileName, 'public');
         }
 
-        // 4. Data Preparation
+        // 4. Prepare data for DB
         $data = [
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
-            'permanent_document' => $fileName,
+            'permanent_document' => $filePath,
             'updated_at' => now(),
         ];
-        
-        // 5. Insert or Update Logic
+
+        // 5. Insert or Update
         if ($existingProfile) {
-            // Update existing profile
             DB::table('patients')
                 ->where('id', $existingProfile->id)
                 ->update($data);
             $message = 'Patient profile updated successfully!';
         } else {
-            // Create new profile
             DB::table('patients')->insert(array_merge($data, [
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'patient_name' => $patientName,
                 'created_at' => now(),
             ]));
             $message = 'New patient profile created successfully!';
         }
 
-        // Redirect back to the patient profile page
         return redirect()->route('records.show_patient', ['patient_name' => $patientName])
                          ->with('success', $message);
     }
