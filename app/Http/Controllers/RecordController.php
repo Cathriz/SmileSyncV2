@@ -14,28 +14,34 @@ class RecordController extends Controller
      * Display all records for the currently logged-in user with search.
      */
     public function index(Request $request)
-    {
-        $userId = Auth::id();
+{
+    $userId = Auth::id();
+    $search = $request->input('search');
+    
+    $query = Record::where('user_id', $userId); 
 
-        $search = $request->input('search');
-        
-        $query = Record::where('user_id', $userId); 
-
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('patient', 'like', "%{$search}%")
-                  ->orWhere('doctor', 'like', "%{$search}%")
-                  ->orWhere('type', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%");
-            });
-        }
-
-        $records = $query->orderBy('date', 'desc')->get();
-        
-        $doctors = DB::table('doctors')->get(); 
-        
-        return view('records', compact('records', 'doctors'));
+    if ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('patient', 'like', "%{$search}%")
+              ->orWhere('doctor', 'like', "%{$search}%")
+              ->orWhere('type', 'like', "%{$search}%")
+              ->orWhere('notes', 'like', "%{$search}%");
+        });
     }
+
+    $records = $query->orderBy('date', 'desc')->get();
+    
+    $doctors = DB::table('doctors')->get(); 
+    
+    // ADD THIS LINE - Get patients for the dropdown
+    $patients = DB::table('patients')
+        ->where('user_id', $userId)
+        ->select('patient_name as name', 'id')
+        ->get();
+    
+    // Pass both variables to the view
+    return view('records', compact('records', 'doctors', 'patients'));
+}
 
     /**
      * Show patient profile + records
