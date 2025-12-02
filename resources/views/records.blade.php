@@ -116,9 +116,7 @@
             @endif
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold text-primary">Manage Records</h3> <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-                    <i class="bi bi-plus-circle"></i> Add Record
-                </button>
+                <h3 class="fw-bold text-primary">Manage Records</h3>
             </div>
 
             <form method="GET" action="{{ route('records.index') }}" class="mb-3">
