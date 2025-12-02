@@ -8,8 +8,13 @@ use App\Http\Controllers\RecordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PatientController;
 
+Route::get('/db-check', function () {
+    $db = DB::select("SELECT DATABASE() AS db");
+    return $db[0]->db;
+});
 
 // --- PUBLIC ROUTES (Landing, Auth) ---
 Route::get('/', function () {
